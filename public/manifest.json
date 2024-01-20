@@ -8,7 +8,10 @@
 		"default_popup": "index.html",
 		"default_title": "freedns-helper"
 	},
-	"permissions": ["activeTab"],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"permissions": ["activeTab", "webNavigation"],
 	"content_scripts": [
 		{
 			"matches": ["https://freedns.afraid.org/domain/registry*"],

@@ -1,7 +1,4 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
 	return (
@@ -14,6 +11,7 @@ export default function Home() {
 			</Head>
 			<main>
 				<h1>freedns helper</h1>
+				<p>Active</p>
 			</main>
 		</>
 	);
