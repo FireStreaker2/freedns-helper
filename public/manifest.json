@@ -11,7 +11,7 @@
 	"background": {
 		"service_worker": "background.js"
 	},
-	"permissions": ["activeTab", "webNavigation"],
+	"permissions": ["activeTab", "webNavigation", "storage"],
 	"content_scripts": [
 		{
 			"matches": ["https://freedns.afraid.org/domain/registry*"],

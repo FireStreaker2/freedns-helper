@@ -1,17 +1,21 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 	if (request.action === "inject") {
 		const elements = [
 			...document.querySelectorAll(".trd"),
 			...document.querySelectorAll(".trl"),
 		];
 
-		elements.forEach((tr) => {
+		const storage = await chrome.storage.sync.get(["data"]);
+		const type = storage.data;
+
+		elements.forEach(async (tr) => {
 			const element = tr.querySelector("td:first-child");
+			if (!element) return;
 
-			if (element) {
-				const url = element.querySelector("a").textContent;
+			const url = element.querySelector("a").textContent;
 
-				fetch(
+			if (type === "lightspeedFilter" || type === "lightspeedRocket") {
+				const response = await fetch(
 					"https://production-archive-proxy-api.lightspeedsystems.com/archiveproxy",
 					{
 						headers: {
@@ -33,14 +37,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 						}),
 						method: "POST",
 					}
-				)
-					.then((r) => r.json())
-					.then((d) => {
-						const category = document.createElement("p");
-						category.textContent = `Categorized as: ${d.data.a.archive_info.filter.category}`;
-						category.style.margin = "0";
-						element.appendChild(category);
-					});
+				);
+
+				if (!response.ok)
+					throw new Error(`Error when fetching: ${response.status}`);
+
+				const data = await response.json();
+
+				const category = document.createElement("p");
+				category.textContent = `Categorized as: ${
+					type === "lightspeedFilter"
+						? data.data.a.archive_info.filter.category
+						: data.data.a.archive_info.rocket.category
+				}`;
+				category.style.margin = "0";
+				element.appendChild(category);
+			} else {
+				throw new Error("Invalid Value!");
 			}
 		});
 	}
